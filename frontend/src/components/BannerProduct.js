@@ -13,6 +13,7 @@ import React, {
 import image6 from '../assest/banner/img6.png'
 import image7 from '../assest/banner/img7.png'
 import image8 from '../assest/banner/img8.jpeg'
+import image9 from '../assest/banner/img9.jpeg'
 
 import image1Mobile from '../assest/banner/img1_mobile.jpg'
 import image2Mobile from '../assest/banner/img2_mobile.webp'
@@ -38,7 +39,7 @@ const BannerProduct = () => {
         image6,
         image7,
         image8,
-        
+        image9,
     ], [])
 
     const mobileImages = useMemo(() => [

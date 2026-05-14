@@ -9,6 +9,7 @@ const app = express();
 
 // ✅ CORS الصحيح
 app.use(cors({
+  // origin: "https://shop-unik-system.netlify.app",
   origin: "http://localhost:8081",
   credentials: true
 }));
