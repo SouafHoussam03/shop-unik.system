@@ -92,7 +92,12 @@ deleteUser: {
 deleteProduct: {
     url: `${backendDomain}/api/delete-product`,
     method: "delete"
+},
+allOrder: {
+    url: `${backendDomain}/api/all-order`,
+    method: "get"
 }
+
 
 
 };
