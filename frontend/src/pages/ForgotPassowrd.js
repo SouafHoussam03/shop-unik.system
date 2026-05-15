@@ -23,7 +23,7 @@ const ForgotPassword = () => {
 
             // ✅ request
             const response = await fetch(
-                "http://localhost:8080/api/forgot-password",
+                "https://shop-unik-system.netlify.app/api/forgot-password",
                 {
                     method: "POST",
 

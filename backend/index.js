@@ -1,39 +1,69 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+const express = require('express')
+const cors = require('cors')
+const cookieParser = require('cookie-parser')
+require('dotenv').config()
 
-const connectDB = require('./config/db');
-const router = require('./routes');
+const connectDB = require('./config/db')
+const router = require('./routes')
 
-const app = express();
+const app = express()
 
-// ✅ CORS الصحيح
+const allowedOrigins = [
+    'https://shop-unik-system.netlify.app',
+]
+
 app.use(cors({
-  // origin: "https://shop-unik-system.netlify.app",
-  origin: "http://localhost:8081",
-  credentials: true
-}));
-const cookieParser = require("cookie-parser")
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true)
+        }
+
+        return callback(new Error('Not allowed by CORS'))
+    },
+    credentials: true
+}))
 
 app.use(cookieParser())
-// ✅ JSON
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
-// ✅ test route
 app.get('/', (req, res) => {
-  res.send('API is running 🚀');
-});
+    res.json({
+        success: true,
+        message: 'API is running'
+    })
+})
 
-// ✅ routes
-app.use("/api", router);
+app.use('/api', router)
 
-// ✅ port
-const PORT = process.env.PORT || 8080;
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        error: true,
+        message: 'Route not found'
+    })
+})
 
-// ✅ start server
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log("✅ Connected to DB");
-    console.log(`🚀 Server is running on http://localhost:${PORT}`);
-  });
-});
+app.use((err, req, res, next) => {
+    console.error(err.message || err)
+
+    res.status(500).json({
+        success: false,
+        error: true,
+        message: err.message || 'Internal server error'
+    })
+})
+
+const PORT = process.env.PORT || 8080
+
+connectDB()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log('Connected to DB')
+            console.log(`Server is running on port ${PORT}`)
+        })
+    })
+    .catch((err) => {
+        console.error('DB connection failed:', err.message || err)
+        process.exit(1)
+    })
