@@ -1,116 +1,372 @@
 const productCategory = [
+
+    // =========================================
+    // ARCHITEX
+    // =========================================
+
     {
         id: 1,
-        label: "Plafond Tendu",
-        value: "plafond-tendu",
-        seoTitle: "Plafond Tendu au Maroc | UNIK SYSTEM",
-        seoDescription: "Découvrez nos solutions de plafond tendu au Maroc pour un intérieur moderne, élégant et durable.",
-        keywords: "plafond tendu maroc, plafond tendu, décoration plafond, UNIK SYSTEM"
+
+        brand: "ARCHITEX",
+
+        label: "ARCHITEX",
+
+        value: "ARCHITEX",
+
+        seoTitle: "Plafond Tendu au Maroc | ARCHITEX - UNIK SYSTEM",
+
+        seoDescription:
+            "Découvrez les solutions ARCHITEX de plafond tendu modernes, élégantes et durables au Maroc.",
+
+        keywords:
+            "ARCHITEX maroc, plafond tendu maroc, décoration plafond, UNIK SYSTEM",
+
+        subCategories: [
+
+            {
+                label: "Laqué",
+                value: "laque"
+            },
+
+            {
+                label: "Mat",
+                value: "mat"
+            },
+
+            {
+                label: "Imprimé",
+                value: "imprime"
+            },
+
+            {
+                label: "Translucide",
+                value: "translucide"
+            }
+
+        ]
     },
+
+    // =========================================
+    // ARTFLOW
+    // =========================================
+
     {
         id: 2,
-        label: "Mur Tendu Imprimé",
-        value: "mur-tendu-imprime",
-        seoTitle: "Mur Tendu Imprimé au Maroc | UNIK SYSTEM",
-        seoDescription: "Créez des murs décoratifs personnalisés avec nos solutions de mur tendu imprimé au Maroc.",
-        keywords: "mur tendu imprimé maroc, mur décoratif, impression murale, UNIK SYSTEM"
+
+        brand: "ARTFLOW",
+
+        label: "ARTFLOW",
+
+        value: "ARTFLOW",
+
+        seoTitle: "Mur Tendu Imprimé au Maroc | ARTFLOW - UNIK SYSTEM",
+
+        seoDescription:
+            "Créez des murs décoratifs personnalisés avec les solutions ARTFLOW au Maroc.",
+
+        keywords:
+            "ARTFLOW maroc, mur tendu imprimé, décoration murale, UNIK SYSTEM",
+
+        subCategories: [
+
+            {
+                label: "Texture",
+                value: "texture"
+            },
+
+            {
+                label: "3D",
+                value: "3d"
+            },
+
+            {
+                label: "Nature",
+                value: "nature"
+            }
+
+        ]
     },
+
+    // =========================================
+    // CLIPTEX + LUMINA
+    // =========================================
+
     {
         id: 3,
-        label: "Lightbox",
-        value: "lightbox",
-        seoTitle: "Lightbox au Maroc | UNIK SYSTEM",
-        seoDescription: "Mettez en valeur vos espaces avec des lightbox modernes, lumineuses et personnalisées.",
-        keywords: "lightbox maroc, caisson lumineux, lightbox personnalisée, UNIK SYSTEM"
+
+        brand: "CLIPTEX",
+
+        label: "CLIPTEX",
+
+        value: "CLIPTEX",
+
+        seoTitle: "Lightbox au Maroc | CLIPTEX - UNIK SYSTEM",
+
+        seoDescription:
+            "Découvrez les solutions lightbox CLIPTEX modernes et lumineuses au Maroc.",
+
+        keywords:
+            "CLIPTEX maroc, lightbox maroc, caisson lumineux, UNIK SYSTEM",
+
+        subCategories: [
+
+            {
+                label: "Murale",
+                value: "murale"
+            },
+
+            {
+                label: "Suspendue",
+                value: "suspendue"
+            },
+
+            {
+                label: "Double Face",
+                value: "double-face"
+            }
+
+        ]
     },
+
     {
         id: 4,
-        label: "Solutions Acoustiques",
-        value: "solutions-acoustiques",
-        seoTitle: "Solutions Acoustiques au Maroc | UNIK SYSTEM",
-        seoDescription: "Améliorez le confort sonore de vos espaces avec nos solutions acoustiques modernes au Maroc.",
-        keywords: "solution acoustique maroc, isolation acoustique, traitement acoustique, UNIK SYSTEM"
+
+        brand: "LUMINA",
+
+        label: "LUMINA",
+
+        value: "LUMINA",
+
+        seoTitle: "Lightbox Premium au Maroc | LUMINA - UNIK SYSTEM",
+
+        seoDescription:
+            "Solutions LUMINA premium pour un éclairage décoratif moderne et élégant.",
+
+        keywords:
+            "LUMINA maroc, lightbox premium, éclairage décoratif, UNIK SYSTEM",
+
+        subCategories: [
+
+            {
+                label: "LED",
+                value: "led"
+            },
+
+            {
+                label: "Suspendue",
+                value: "suspendue"
+            },
+
+            {
+                label: "Slim",
+                value: "slim"
+            }
+
+        ]
     },
+
+    // =========================================
+    // ACOUSTIX
+    // =========================================
+
     {
         id: 5,
-        label: "Toiles Acoustiques AW",
-        value: "toiles-acoustiques-aw",
-        seoTitle: "Toiles Acoustiques AW au Maroc | UNIK SYSTEM",
-        seoDescription: "Découvrez les toiles acoustiques AW pour améliorer l'acoustique et le design de vos espaces.",
-        keywords: "toile acoustique AW, toile acoustique maroc, acoustique intérieure, UNIK SYSTEM"
+
+        brand: "ACOUSTIX",
+
+        label: "ACOUSTIX",
+
+        value: "ACOUSTIX",
+
+        seoTitle: "Solutions Acoustiques au Maroc | ACOUSTIX - UNIK SYSTEM",
+
+        seoDescription:
+            "Améliorez le confort sonore avec les solutions acoustiques ACOUSTIX.",
+
+        keywords:
+            "ACOUSTIX maroc, isolation acoustique, traitement acoustique, UNIK SYSTEM",
+
+        subCategories: [
+
+            {
+                label: "Toiles Acoustiques AW",
+                value: "toiles-acoustiques-aw"
+            },
+
+            {
+                label: "Abat-jour Acoustique",
+                value: "abat-jour-acoustique"
+            },
+
+            {
+                label: "Cabine Acoustique",
+                value: "cabine-acoustique"
+            },
+
+            {
+                label: "Tableaux Acoustiques",
+                value: "tableaux-acoustiques"
+            }
+
+        ]
     },
+
+    // =========================================
+    // SOFTEX
+    // =========================================
+
     {
         id: 6,
-        label: "Abat-jour Acoustique",
-        value: "abat-jour-acoustique",
-        seoTitle: "Abat-jour Acoustique au Maroc | UNIK SYSTEM",
-        seoDescription: "Combinez éclairage et confort sonore avec nos abat-jours acoustiques design.",
-        keywords: "abat jour acoustique, luminaire acoustique, acoustique design, UNIK SYSTEM"
+
+        brand: "SOFTEX",
+
+        label: "SOFTEX",
+
+        value: "SOFTEX",
+
+        seoTitle: "Papier Peint au Maroc | SOFTEX - UNIK SYSTEM",
+
+        seoDescription:
+            "Découvrez les collections SOFTEX de papier peint décoratif au Maroc.",
+
+        keywords:
+            "SOFTEX maroc, papier peint décoratif, décoration murale, UNIK SYSTEM",
+
+        subCategories: [
+
+            {
+                label: "Moderne",
+                value: "moderne"
+            },
+
+            {
+                label: "Classique",
+                value: "classique"
+            },
+
+            {
+                label: "3D",
+                value: "3d"
+            }
+
+        ]
     },
+
+    // =========================================
+    // SOLARIS
+    // =========================================
+
     {
         id: 7,
-        label: "Cabine Acoustique",
-        value: "cabine-acoustique",
-        seoTitle: "Cabine Acoustique au Maroc | UNIK SYSTEM",
-        seoDescription: "Installez des cabines acoustiques modernes pour bureaux, espaces professionnels et zones de concentration.",
-        keywords: "cabine acoustique maroc, cabine bureau acoustique, phone booth acoustique, UNIK SYSTEM"
+
+        brand: "SOLARIS",
+
+        label: "SOLARIS",
+
+        value: "SOLARIS",
+
+        seoTitle: "Film Solaire au Maroc | SOLARIS - UNIK SYSTEM",
+
+        seoDescription:
+            "Films solaires SOLARIS contre la chaleur, les UV et l'éblouissement.",
+
+        keywords:
+            "SOLARIS maroc, film solaire maroc, protection vitrage, UNIK SYSTEM",
+
+        subCategories: [
+
+            {
+                group: "Solar Control",
+                label: "Silver",
+                value: "silver"
+            },
+
+            {
+                group: "Solar Control",
+                label: "Neutral",
+                value: "neutral"
+            },
+
+            {
+                group: "Solar Control",
+                label: "Coloured",
+                value: "coloured"
+            },
+
+            {
+                group: "Solar Control",
+                label: "Transparent",
+                value: "transparent"
+            },
+
+            {
+                group: "Safety",
+                label: "Security",
+                value: "security"
+            },
+
+            {
+                group: "Safety",
+                label: "Anti-Graffiti",
+                value: "anti-graffiti"
+            },
+
+            {
+                group: "Design",
+                label: "Privacy",
+                value: "privacy"
+            },
+
+            {
+                group: "Design",
+                label: "Decorative",
+                value: "decorative"
+            }
+
+        ]
     },
+
+    // =========================================
+    // WALLDRES
+    // =========================================
+
     {
         id: 8,
-        label: "Tableaux Acoustiques",
-        value: "tableaux-acoustiques",
-        seoTitle: "Tableaux Acoustiques au Maroc | UNIK SYSTEM",
-        seoDescription: "Décorez vos murs tout en améliorant l'acoustique grâce à nos tableaux acoustiques personnalisés.",
-        keywords: "tableaux acoustiques maroc, panneau acoustique décoratif, acoustique murale, UNIK SYSTEM"
-    },
-    {
-        id: 9,
-        label: "Papier Peint",
-        value: "papier-peint",
-        seoTitle: "Papier Peint au Maroc | UNIK SYSTEM",
-        seoDescription: "Découvrez notre sélection de papier peint décoratif au Maroc pour transformer vos murs.",
-        keywords: "papier peint maroc, papier peint décoratif, décoration murale, UNIK SYSTEM"
-    },
-    {
-        id: 10,
-        label: "Film Solaire",
-        value: "film-solaire",
-        seoTitle: "Film Solaire au Maroc | UNIK SYSTEM",
-        seoDescription: "Protégez vos vitrages avec des films solaires efficaces contre la chaleur, les UV et l'éblouissement.",
-        keywords: "film solaire maroc, film anti chaleur, protection vitrage, UNIK SYSTEM"
-    },
-    {
-        id: 11,
-        label: "Film Décoratif",
-        value: "film-decoratif",
-        seoTitle: "Film Décoratif au Maroc | UNIK SYSTEM",
-        seoDescription: "Personnalisez vos vitrages avec des films décoratifs élégants pour bureaux, commerces et maisons.",
-        keywords: "film décoratif maroc, film vitrage décoratif, décoration vitre, UNIK SYSTEM"
-    },
-    {
-        id: 12,
-        label: "Store Solaire",
-        value: "store-solaire",
-        seoTitle: "Store Solaire au Maroc | UNIK SYSTEM",
-        seoDescription: "Découvrez nos stores solaires pour gérer la lumière, la chaleur et le confort de vos espaces.",
-        keywords: "store solaire maroc, store anti chaleur, protection solaire, UNIK SYSTEM"
-    },
-    {
-        id: 13,
-        label: "Store Banne",
-        value: "store-banne",
-        seoTitle: "Store Banne au Maroc | UNIK SYSTEM",
-        seoDescription: "Profitez de vos terrasses avec nos stores bannes modernes, résistants et élégants.",
-        keywords: "store banne maroc, store terrasse, protection solaire extérieure, UNIK SYSTEM"
-    },
-    {
-        id: 14,
-        label: "Voile d'Ombrage",
-        value: "voile-ombrage",
-        seoTitle: "Voile d'Ombrage au Maroc | UNIK SYSTEM",
-        seoDescription: "Créez des espaces extérieurs confortables avec nos voiles d'ombrage design et résistantes.",
-        keywords: "voile d'ombrage maroc, protection solaire extérieure, voile ombrage terrasse, UNIK SYSTEM"
+
+        brand: "WALLDRES",
+
+        label: "WALLDRES",
+
+        value: "WALLDRES",
+
+        seoTitle: "Décoration Murale au Maroc | WALLDRES - UNIK SYSTEM",
+
+        seoDescription:
+            "Habillez vos espaces avec les solutions de décoration murale WALLDRES.",
+
+        keywords:
+            "WALLDRES maroc, décoration murale, design intérieur, UNIK SYSTEM",
+
+        subCategories: [
+
+            {
+                label: "Minimaliste",
+                value: "minimaliste"
+            },
+
+            {
+                label: "Moderne",
+                value: "moderne"
+            },
+
+            {
+                label: "Artistique",
+                value: "artistique"
+            }
+
+        ]
     }
+
 ]
 
 export default productCategory

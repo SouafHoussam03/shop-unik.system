@@ -19,6 +19,12 @@ import PageNotFound from '../pages/PageNotFound'
 import About from '../pages/About'
 import Contact from '../pages/Contact'
 import Devis from '../pages/Devis'
+import Checkout from '../pages/Checkout'
+import Livraison from '../pages/Livraison'
+import AdminUsersCartDelivery from '../pages/AdminUsersCartDelivery'
+import PaymentSuccess from '../pages/PaymentSuccess'
+import PaymentCancel from '../pages/PaymentCancel'
+import DiscoverProducts from '../pages/DiscoverProducts'
 
 
 
@@ -30,6 +36,14 @@ const router = createBrowserRouter([
             {
                 path : "",
                 element : <Home/>
+            },
+            {
+                path: "/checkout",
+                element: <Checkout />
+            },
+            {
+                path: "/livraison",
+                element: <Livraison />
             },
             {
                 path : "login",
@@ -87,6 +101,18 @@ const router = createBrowserRouter([
                 path: "/devis",
                 element: <Devis />
             },
+            {
+                path: "/success",
+                element: <PaymentSuccess />
+            },
+            {
+                path: "/cancel",
+                element: <PaymentCancel />
+            },
+            {
+                path: "/Découvrir-Nos-Produits",
+                element: <DiscoverProducts/>
+            },
 
 
 
@@ -105,6 +131,10 @@ const router = createBrowserRouter([
                     {
                         path : "all-products",
                         element : <AllProducts/>
+                    },
+                    {
+                        path: "users-cart-delivery",
+                        element: <AdminUsersCartDelivery />
                     },
                     
                 ]

@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
     FaUsers,
@@ -12,6 +11,18 @@ import {
 
 import SummaryApi from '../common'
 
+const getOrderCode = (order, index = 0) => {
+    if (order?.orderCode) return order.orderCode
+    if (order?.commandeCode) return order.commandeCode
+
+    const id = order?._id || ""
+    const shortId = id
+        ? id.slice(-6).toUpperCase()
+        : String(index + 1).padStart(6, "0")
+
+    return `CMD-${shortId}`
+}
+
 const Dashboard = () => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState("")
@@ -19,7 +30,7 @@ const Dashboard = () => {
     const [products, setProducts] = useState([])
     const [orders, setOrders] = useState([])
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         const response = await fetch(SummaryApi.allUser.url, {
             method: SummaryApi.allUser.method,
             credentials: "include"
@@ -30,22 +41,23 @@ const Dashboard = () => {
         if (dataResponse.success) {
             setUsers(dataResponse.data || [])
         }
-    }
+    }, [])
 
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
         const response = await fetch(SummaryApi.allProduct.url)
         const dataResponse = await response.json()
 
         if (dataResponse.success) {
             setProducts(dataResponse.data || [])
         }
-    }
+    }, [])
 
-    const fetchOrders = async () => {
+    const fetchOrders = useCallback(async () => {
         const orderApi =
             SummaryApi.allOrder ||
             SummaryApi.allOrders ||
-            SummaryApi.getAllOrders
+            SummaryApi.getAllOrders ||
+            SummaryApi.adminUsersCartDelivery
 
         if (!orderApi?.url) {
             setOrders([])
@@ -59,12 +71,23 @@ const Dashboard = () => {
 
         const dataResponse = await response.json()
 
-        if (dataResponse.success) {
-            setOrders(dataResponse.data || [])
+        if (!dataResponse.success) {
+            setOrders([])
+            return
         }
-    }
 
-    const loadData = async () => {
+        if (orderApi === SummaryApi.adminUsersCartDelivery) {
+            const allOrders = (dataResponse.data || [])
+                .flatMap((item) => item?.orders || [])
+
+            setOrders(allOrders)
+            return
+        }
+
+        setOrders(dataResponse.data || [])
+    }, [])
+
+    const loadData = useCallback(async () => {
         try {
             setLoading(true)
             setError("")
@@ -74,33 +97,27 @@ const Dashboard = () => {
                 fetchProducts(),
                 fetchOrders()
             ])
-
         } catch (error) {
             setError("Failed to load dashboard data")
         } finally {
             setLoading(false)
         }
-    }
+    }, [fetchUsers, fetchProducts, fetchOrders])
 
     useEffect(() => {
         loadData()
-    }, [])
+    }, [loadData])
 
     const onlineUsers = useMemo(() => {
-        return users.filter((user) => {
-            if (user?.isOnline) return true
-            if (user?.status === "online") return true
+    return users.filter((user) => {
+        if (!user?.lastActiveAt) return false
 
-            if (user?.lastActiveAt) {
-                const lastActive = new Date(user.lastActiveAt).getTime()
-                const now = Date.now()
+        const lastActive = new Date(user.lastActiveAt).getTime()
+        const now = Date.now()
 
-                return now - lastActive < 15 * 60 * 1000
-            }
-
-            return false
-        })
-    }, [users])
+        return now - lastActive < 15 * 60 * 1000
+    })
+}, [users])
 
     const totalUsers = users.length
     const totalProducts = products.length
@@ -121,6 +138,7 @@ const Dashboard = () => {
 
     const downloadOrdersCsv = () => {
         const headers = [
+            "Code Commande",
             "Order ID",
             "Customer",
             "Email",
@@ -130,15 +148,16 @@ const Dashboard = () => {
             "Date"
         ]
 
-        const rows = orders.map((order) => [
+        const rows = orders.map((order, index) => [
+            getOrderCode(order, index),
             order?._id,
             order?.userId?.name || order?.customerName || order?.name || "",
             order?.userId?.email || order?.email || "",
-            order?.phone || order?.mobile || "",
+            order?.deliveryInfo?.phone || order?.phone || order?.mobile || "",
             order?.totalAmount || order?.amount || order?.total || "",
-            order?.status || "Pending",
+            order?.paymentStatus || order?.status || "Pending",
             order?.createdAt
-                ? new Date(order.createdAt).toLocaleString()
+                ? new Date(order.createdAt).toLocaleString("fr-FR")
                 : ""
         ])
 
@@ -333,7 +352,8 @@ const Dashboard = () => {
                         <table className='w-full border-collapse'>
                             <thead>
                                 <tr className='bg-slate-100 text-gray-700'>
-                                    <th className='p-4 text-left rounded-l-2xl'>Client</th>
+                                    <th className='p-4 text-left rounded-l-2xl'>Code</th>
+                                    <th className='p-4 text-left'>Client</th>
                                     <th className='p-4 text-left'>Total</th>
                                     <th className='p-4 text-left'>Status</th>
                                     <th className='p-4 text-left rounded-r-2xl'>Date</th>
@@ -342,11 +362,15 @@ const Dashboard = () => {
 
                             <tbody>
                                 {recentOrders.length > 0 ? (
-                                    recentOrders.map((order) => (
+                                    recentOrders.map((order, index) => (
                                         <tr
                                             key={order?._id}
                                             className='border-b hover:bg-slate-50 transition-all'
                                         >
+                                            <td className='p-4 font-black text-red-600'>
+                                                {getOrderCode(order, index)}
+                                            </td>
+
                                             <td className='p-4 font-semibold text-gray-800'>
                                                 {order?.userId?.name || order?.customerName || order?.name || "Client"}
                                             </td>
@@ -357,13 +381,13 @@ const Dashboard = () => {
 
                                             <td className='p-4'>
                                                 <span className='bg-red-50 text-red-600 px-3 py-1 rounded-full text-sm font-semibold'>
-                                                    {order?.status || "Pending"}
+                                                    {order?.paymentStatus || order?.status || "Pending"}
                                                 </span>
                                             </td>
 
                                             <td className='p-4 text-gray-600'>
                                                 {order?.createdAt
-                                                    ? new Date(order.createdAt).toLocaleDateString()
+                                                    ? new Date(order.createdAt).toLocaleDateString("fr-FR")
                                                     : "-"}
                                             </td>
                                         </tr>
@@ -371,7 +395,7 @@ const Dashboard = () => {
                                 ) : (
                                     <tr>
                                         <td
-                                            colSpan='4'
+                                            colSpan='5'
                                             className='p-8 text-center text-gray-500'
                                         >
                                             No commandes found

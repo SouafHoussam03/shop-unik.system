@@ -1,4 +1,4 @@
-const backendDomain = "https://shop-unik-system.onrender.com";
+const backendDomain = "http://localhost:8080";
 
 const SummaryApi = {
   signUP: {
@@ -93,11 +93,18 @@ deleteProduct: {
     url: `${backendDomain}/api/delete-product`,
     method: "delete"
 },
-allOrder: {
-    url: `${backendDomain}/api/all-order`,
+checkout: {
+    url: `${backendDomain}/api/checkout`,
+    method: "post"
+},
+adminUsersCartDelivery: {
+    url: `${backendDomain}/api/admin-users-cart-delivery`,
     method: "get"
-}
-
+},
+saveDeliveryInfo: {
+    url: `${backendDomain}/api/save-delivery-info`,
+    method: "post"
+},
 
 
 };

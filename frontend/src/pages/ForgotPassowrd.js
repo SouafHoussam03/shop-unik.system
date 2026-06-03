@@ -1,158 +1,105 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import React, { useState } from "react"
+import { Link } from "react-router-dom"
+import { FaEnvelope } from "react-icons/fa"
+import { toast } from "react-toastify"
+
+import SummaryApi from "../common"
 
 const ForgotPassword = () => {
-
     const [email, setEmail] = useState("")
     const [loading, setLoading] = useState(false)
 
     const handleSubmit = async (e) => {
-
         e.preventDefault()
 
-        if (!email) {
-            return toast.error("Please enter your email")
+        if (!email.trim()) {
+            toast.error("Veuillez entrer votre email")
+            return
         }
 
         try {
-
             setLoading(true)
 
-            const response = await fetch(
-                "https://shop-unik-system.onrender.com/api/forgot-password",
-                {
-                    method: "POST",
+            const response = await fetch(SummaryApi.forgotPassword.url, {
+                method: SummaryApi.forgotPassword.method,
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email.trim()
+                })
+            })
 
-                    credentials: "include",
+            const result = await response.json()
 
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({ email })
-                }
-            )
-
-            const dataResponse = await response.json()
-
-            console.log(dataResponse)
-
-            if (dataResponse.success) {
-
-                toast.success(
-                    dataResponse.message || "Reset link sent successfully"
-                )
-
-                setEmail("")
-
-                setTimeout(() => {
-
-                    toast.info("Check your email inbox 📩")
-
-                }, 1200)
-
-            } else {
-
-                toast.error(
-                    dataResponse.message || "Something went wrong"
-                )
+            if (result.success) {
+                toast.success(result.message || "Lien envoyé avec succès")
             }
 
+            if (result.error) {
+                toast.error(result.message)
+            }
         } catch (error) {
-
-            console.log("FORGOT PASSWORD ERROR => ", error)
-
-            toast.error(
-                error.message || "Server Error"
-            )
-
+            toast.error("Erreur serveur")
         } finally {
-
             setLoading(false)
         }
     }
 
     return (
+        <section className="min-h-screen bg-[#f3f4f6] flex items-center justify-center px-4 py-10">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
 
-        <section className='min-h-screen bg-slate-100 flex justify-center items-center px-4'>
+                <div className="px-8 pt-8 pb-6 text-center border-b">
+                    
 
-            <div className='bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden'>
-
-                {/* HEADER */}
-                <div className='bg-red-600 text-white text-center py-10 px-6'>
-
-                    <h2 className='text-3xl font-bold'>
+                    <h1 className="text-3xl font-black text-[#5f5d58] mt-6">
                         Forgot Password
-                    </h2>
+                    </h1>
 
-                    <p className='mt-2 text-red-100'>
-                        Enter your email to receive reset link
+                    <p className="text-gray-500 mt-2">
+                        Entrez votre email pour recevoir le lien
                     </p>
-
                 </div>
 
-                {/* FORM */}
-                <div className='p-8'>
+                <form onSubmit={handleSubmit} className="p-8 space-y-5">
 
-                    <form
-                        onSubmit={handleSubmit}
-                        className='flex flex-col gap-5'
+                    <div>
+                        <label className="font-semibold text-[#5f5d58] flex items-center gap-2">
+                            <FaEnvelope className="text-[#ed1c24]" />
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            placeholder="Votre email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full mt-2 px-4 py-3 rounded-xl border border-gray-300 bg-white outline-none focus:border-[#ed1c24]"
+                            required
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-[#ed1c24] hover:bg-[#5f5d58] disabled:bg-red-300 text-white py-3 rounded-xl font-bold transition-all"
                     >
+                        {loading ? "Envoi..." : "Send Reset Link"}
+                    </button>
 
-                        {/* EMAIL */}
-                        <div>
-
-                            <label className='font-semibold text-gray-700'>
-                                Email Address
-                            </label>
-
-                            <input
-                                type='email'
-                                placeholder='Enter your email'
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className='w-full mt-2 border border-gray-300 p-4 rounded-2xl outline-none focus:border-red-500 transition-all'
-                                required
-                            />
-
-                        </div>
-
-                        {/* BUTTON */}
-                        <button
-                            type='submit'
-                            disabled={loading}
-                            className='bg-red-600 hover:bg-red-700 text-white py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-[1.02]'
-                        >
-
-                            {
-                                loading
-                                    ? "Sending..."
-                                    : "Send Reset Link"
-                            }
-
-                        </button>
-
-                    </form>
-
-                    {/* FOOTER */}
-                    <p className='text-center mt-6 text-gray-600'>
-
-                        Back to{" "}
-
+                    <p className="text-center text-gray-600">
+                        Retour à{" "}
                         <Link
                             to="/login"
-                            className='text-red-600 font-semibold hover:underline'
+                            className="text-[#ed1c24] font-bold hover:underline"
                         >
                             Login
                         </Link>
-
                     </p>
 
-                </div>
-
+                </form>
             </div>
-
         </section>
     )
 }

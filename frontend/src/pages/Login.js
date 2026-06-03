@@ -1,289 +1,166 @@
-import React, {
-    useContext,
-    useState
-} from 'react'
+import React, { useContext, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { FaEnvelope, FaEye, FaEyeSlash, FaLock } from "react-icons/fa"
+import { toast } from "react-toastify"
+import { useDispatch } from "react-redux"
 
-import loginIcons from '../assest/signin.gif'
-
-import {
-    FaEye,
-    FaEyeSlash,
-    FaUserShield
-} from "react-icons/fa"
-
-import {
-    Link,
-    useNavigate
-} from 'react-router-dom'
-
-import SummaryApi from '../common'
-
-import { toast } from 'react-toastify'
-
-import Context from '../context'
+import SummaryApi from "../common"
+import Context from "../context"
+import { setUserDetails } from "../store/userSlice"
 
 const Login = () => {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const context = useContext(Context)
 
-    const [showPassword, setShowPassword] =
-        useState(false)
-
-    const [loading, setLoading] =
-        useState(false)
+    const [showPassword, setShowPassword] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const [data, setData] = useState({
-
         email: "",
-
         password: ""
     })
 
-    const navigate = useNavigate()
-
-    const {
-        fetchUserDetails,
-        fetchUserAddToCart
-    } = useContext(Context)
-
-    // ================= HANDLE CHANGE =================
-    const handleOnChange = (e) => {
-
+    const handleChange = (e) => {
         const { name, value } = e.target
 
-        setData((prev) => {
-
-            return {
-                ...prev,
-                [name]: value
-            }
-        })
+        setData((prev) => ({
+            ...prev,
+            [name]: value
+        }))
     }
 
-    // ================= SUBMIT =================
     const handleSubmit = async (e) => {
-
         e.preventDefault()
 
-        try {
+        if (!data.email.trim() || !data.password.trim()) {
+            toast.error("Veuillez remplir tous les champs")
+            return
+        }
 
+        try {
             setLoading(true)
 
-            const dataResponse = await fetch(
-                SummaryApi.signIn.url,
-                {
-                    method:
-                        SummaryApi.signIn.method,
+            const response = await fetch(SummaryApi.signIn.url, {
+                method: SummaryApi.signIn.method,
+                credentials: "include",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
 
-                    credentials: 'include',
+            const result = await response.json()
 
-                    headers: {
-                        "content-type": "application/json"
-                    },
-
-                    body: JSON.stringify(data)
-                }
-            )
-
-            const dataApi =
-                await dataResponse.json()
-
-            if (dataApi.success) {
-
-                toast.success(dataApi.message)
-
-                fetchUserDetails()
-
-                fetchUserAddToCart()
-
+            if (result.success) {
+                toast.success(result.message || "Connexion réussie")
+                dispatch(setUserDetails(result.data))
+                context?.fetchUserDetails?.()
+                context?.fetchUserAddToCart?.()
                 navigate("/")
             }
 
-            if (dataApi.error) {
-
-                toast.error(dataApi.message)
+            if (result.error) {
+                toast.error(result.message)
             }
-
         } catch (error) {
-
-            toast.error("Something went wrong")
-        }
-        finally {
-
+            toast.error("Erreur serveur")
+        } finally {
             setLoading(false)
         }
     }
 
     return (
+        <section className="min-h-screen bg-[#f3f4f6] flex items-center justify-center px-4 py-10">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
 
-        <section className='min-h-screen bg-slate-100 flex items-center justify-center px-4 py-10'>
+                <div className="px-8 pt-8 pb-6 text-center border-b">
+                    
 
-            <div className='bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden'>
+                    <h1 className="text-3xl font-black text-[#5f5d58] mt-6">
+                        Login
+                    </h1>
 
-                {/* HEADER */}
-                <div className='bg-gradient-to-r from-red-600 to-red-700 px-8 py-10 text-white text-center'>
+                    <p className="text-gray-500 mt-2">
+                        Connectez-vous à votre compte
+                    </p>
+                </div>
 
-                    <div className='w-24 h-24 mx-auto bg-white rounded-full flex justify-center items-center shadow-lg overflow-hidden'>
+                <form onSubmit={handleSubmit} className="p-8 space-y-5">
 
-                        <img
-                            src={loginIcons}
-                            alt='login'
-                            className='w-full h-full object-cover'
+                    <div>
+                        <label className="font-semibold text-[#5f5d58] flex items-center gap-2">
+                            <FaEnvelope className="text-[#ed1c24]" />
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            name="email"
+                            value={data.email}
+                            onChange={handleChange}
+                            placeholder="Votre email"
+                            className="w-full mt-2 px-4 py-3 rounded-xl border border-gray-300 bg-white outline-none focus:border-[#ed1c24]"
+                            required
                         />
-
                     </div>
 
-                    <h2 className='text-3xl font-bold mt-5'>
-                        Welcome Back 👋
-                    </h2>
+                    <div>
+                        <label className="font-semibold text-[#5f5d58] flex items-center gap-2">
+                            <FaLock className="text-[#ed1c24]" />
+                            Mot de passe
+                        </label>
 
-                    <p className='text-red-100 mt-2'>
-                        Login to your UNIK SYSTEM account
-                    </p>
+                        <div className="w-full mt-2 px-4 py-3 rounded-xl border border-gray-300 bg-white flex items-center focus-within:border-[#ed1c24]">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                value={data.password}
+                                onChange={handleChange}
+                                placeholder="Votre mot de passe"
+                                className="w-full outline-none"
+                                required
+                            />
 
-                </div>
-
-                {/* FORM */}
-                <div className='p-8'>
-
-                    <form
-                        className='flex flex-col gap-5'
-                        onSubmit={handleSubmit}
-                    >
-
-                        {/* EMAIL */}
-                        <div>
-
-                            <label className='font-semibold text-gray-700'>
-                                Email Address
-                            </label>
-
-                            <div className='bg-slate-100 mt-2 rounded-2xl px-4 py-3 border focus-within:border-red-500'>
-
-                                <input
-                                    type='email'
-                                    placeholder='Enter your email'
-                                    name='email'
-                                    value={data.email}
-                                    onChange={handleOnChange}
-                                    className='w-full bg-transparent outline-none'
-                                    required
-                                />
-
-                            </div>
-
-                        </div>
-
-                        {/* PASSWORD */}
-                        <div>
-
-                            <label className='font-semibold text-gray-700'>
-                                Password
-                            </label>
-
-                            <div className='bg-slate-100 mt-2 rounded-2xl px-4 py-3 border flex items-center focus-within:border-red-500'>
-
-                                <input
-                                    type={
-                                        showPassword
-                                            ? "text"
-                                            : "password"
-                                    }
-                                    placeholder='Enter your password'
-                                    value={data.password}
-                                    name='password'
-                                    onChange={handleOnChange}
-                                    className='w-full bg-transparent outline-none'
-                                    required
-                                />
-
-                                <button
-                                    type='button'
-                                    className='text-xl text-gray-600 hover:text-red-600 transition-all'
-                                    onClick={() =>
-                                        setShowPassword((prev) => !prev)
-                                    }
-                                >
-
-                                    {
-                                        showPassword
-                                            ? <FaEyeSlash />
-                                            : <FaEye />
-                                    }
-
-                                </button>
-
-                            </div>
-
-                            {/* FORGOT */}
-                            <Link
-                                to={'/forgot-password'}
-                                className='block w-fit ml-auto mt-3 text-sm text-red-600 hover:underline font-medium'
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                                className="text-gray-500 hover:text-[#ed1c24]"
                             >
-
-                                Forgot Password?
-
-                            </Link>
-
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </button>
                         </div>
-
-                        {/* BUTTON */}
-                        <button
-                            disabled={loading}
-                            className='bg-red-600 hover:bg-red-700 text-white py-4 rounded-full text-lg font-bold transition-all hover:scale-[1.02] mt-3'
-                        >
-
-                            {
-                                loading
-                                    ? "Loading..."
-                                    : "Login"
-                            }
-
-                        </button>
-
-                    </form>
-
-                    {/* SIGNUP */}
-                    <p className='text-center mt-8 text-gray-600'>
-
-                        Don’t have an account?{" "}
-
-                        <Link
-                            to={"/sign-up"}
-                            className='text-red-600 hover:underline font-semibold'
-                        >
-
-                            Create Account
-
-                        </Link>
-
-                    </p>
-
-                    {/* SECURITY */}
-                    <div className='mt-8 bg-slate-100 rounded-2xl p-4 flex items-center gap-4'>
-
-                        <div className='bg-red-100 text-red-600 p-3 rounded-full text-2xl'>
-
-                            <FaUserShield />
-
-                        </div>
-
-                        <div>
-
-                            <h3 className='font-bold text-gray-800'>
-                                Secure Login
-                            </h3>
-
-                            <p className='text-sm text-gray-500'>
-                                Your account is protected with encrypted authentication.
-                            </p>
-
-                        </div>
-
                     </div>
 
-                </div>
+                    <div className="text-right">
+                        <Link
+                            to="/forgot-password"
+                            className="text-[#ed1c24] font-semibold hover:underline"
+                        >
+                            Mot de passe oublié ?
+                        </Link>
+                    </div>
 
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-[#ed1c24] hover:bg-[#5f5d58] disabled:bg-red-300 text-white py-3 rounded-xl font-bold transition-all"
+                    >
+                        {loading ? "Connexion..." : "Login"}
+                    </button>
+
+                    <p className="text-center text-gray-600">
+                        Vous n'avez pas de compte ?{" "}
+                        <Link
+                            to="/sign-up"
+                            className="text-[#ed1c24] font-bold hover:underline"
+                        >
+                            Create Account
+                        </Link>
+                    </p>
+
+                </form>
             </div>
-
         </section>
     )
 }

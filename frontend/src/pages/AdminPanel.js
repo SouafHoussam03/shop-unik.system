@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa"
 
 import { MdDashboard } from "react-icons/md"
+import { FaTruck } from "react-icons/fa"
 
 import {
     Link,
@@ -43,7 +44,7 @@ const AdminPanel = () => {
         <div className='min-h-screen bg-slate-100 flex'>
 
             {/* ================= SIDEBAR ================= */}
-            <aside className='bg-white w-[280px] shadow-2xl hidden lg:flex flex-col'>
+            <aside className=' bg-white w-[280px] shadow-2xl hidden lg:flex flex-col'>
 
                 {/* HEADER */}
                 <div className='bg-gradient-to-r from-red-600 to-red-700 p-6 text-white'>
@@ -144,6 +145,20 @@ const AdminPanel = () => {
 
                         All Products
 
+                    </Link>
+                    {/* USERS CART LIVRAISON */}
+                    <Link
+                    to={"users-cart-delivery"}
+                            className={`
+                            flex items-center gap-3 px-5 py-4 rounded-2xl font-semibold transition-all
+                            ${location.pathname.includes("users-cart-delivery")
+                            ? "bg-red-600 text-white shadow-lg"
+                        : "hover:bg-slate-100 text-gray-700"}
+                    `}
+                        >
+                    <FaTruck />
+
+                    Users Cart Livraison
                     </Link>
 
                 </nav>

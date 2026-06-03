@@ -11,6 +11,9 @@ import { useDispatch } from 'react-redux';
 import { setUserDetails } from './store/userSlice';
 import NavButton from './components/NavButton';
 import WhatsAppButton from './components/WhatsAppButton';
+import ScrollToTop from './components/ScrollToTop';
+
+
 
 function App() {
   const dispatch = useDispatch();
@@ -72,6 +75,7 @@ function App() {
         <ToastContainer position="top-center" autoClose={2000} />
 
         <Header />
+        <ScrollToTop />
 
         <main className="min-h-[calc(100vh-120px)] pt-16">
           <Outlet />
