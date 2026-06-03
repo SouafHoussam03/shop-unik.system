@@ -9,7 +9,7 @@ const router = require('./routes')
 const app = express()
 
 const allowedOrigins = [
-    'https://shop-unik-system.netlify.app',
+    'https://steady-torrone-cc03ee.netlify.app',
 ]
 
 app.use(cors({
