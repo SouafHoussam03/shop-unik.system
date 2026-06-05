@@ -9,7 +9,7 @@ const app = express();
 
 // ✅ CORS الصحيح
 app.use(cors({
-  origin: "http://localhost:8081",
+  origin: "https://steady-torrone-cc03ee.netlify.app",
   credentials: true
 }));
 const cookieParser = require("cookie-parser")
@@ -33,6 +33,6 @@ const PORT = process.env.PORT || 8080;
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log("✅ Connected to DB");
-    console.log(`🚀 Server is running on http://localhost:${PORT}`);
+    console.log(`🚀 Server is running on https://steady-torrone-cc03ee.netlify.app`);
   });
 });
