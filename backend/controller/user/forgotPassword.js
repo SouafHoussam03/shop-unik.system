@@ -22,9 +22,12 @@ async function forgotPassword(req, res) {
       });
     }
 
+    // Generate JWT Token
     const token = jwt.sign(
       {
         id: user._id.toString(),
+        email: user.email,
+        purpose: "reset-password",
       },
       process.env.TOKEN_SECRET_KEY,
       {
@@ -32,13 +35,15 @@ async function forgotPassword(req, res) {
       }
     );
 
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${encodeURIComponent(
-      token
-    )}`;
+    console.log("=================================");
+    console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
 
-    console.log("Reset link:", resetLink);
-    console.log("Sending Email...");
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
 
+    console.log("RESET_LINK:", resetLink);
+    console.log("=================================");
+
+    // Send Email with Brevo
     const response = await axios.post(
       "https://api.brevo.com/v3/smtp/email",
       {
@@ -49,33 +54,69 @@ async function forgotPassword(req, res) {
 
         to: [
           {
-            email,
+            email: user.email,
+            name: user.name,
           },
         ],
 
-        subject: "Reset Password",
+        subject: "Password Reset Request",
 
         htmlContent: `
-          <div style="font-family:sans-serif;padding:20px">
-            <h2>Hello ${user.name}</h2>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8" />
+        </head>
+        <body style="font-family: Arial, sans-serif; background:#f4f4f4; padding:20px;">
+          <div style="max-width:600px;margin:auto;background:white;border-radius:10px;overflow:hidden;">
+            
+            <div style="background:#ff0000;padding:25px;text-align:center;">
+              <h1 style="color:white;margin:0;">UNIK SYSTEM</h1>
+              <p style="color:white;margin-top:10px;">
+                Password Reset Request
+              </p>
+            </div>
 
-            <p>Click below to reset your password</p>
+            <div style="padding:30px;">
+              <h2>Hello ${user.name} </h2>
 
-            <a
-              href="${resetLink}"
-              style="
-                background:#dc2626;
-                color:white;
-                padding:12px 20px;
-                text-decoration:none;
-                border-radius:6px;
-                display:inline-block;
-                margin-top:10px;
-              "
-            >
-              Reset Password
-            </a>
+              <p>
+                We received a request to reset your password.
+              </p>
+
+              <p>
+                Click the button below to create a new password:
+              </p>
+
+              <div style="text-align:center;margin:30px 0;">
+                <a
+                  href="${resetLink}"
+                  style="
+                    background:#ff0000;
+                    color:white;
+                    padding:15px 30px;
+                    text-decoration:none;
+                    border-radius:30px;
+                    font-weight:bold;
+                    display:inline-block;
+                  "
+                >
+                  Reset Password
+                </a>
+              </div>
+
+              <p>
+                This link will expire in <strong>15 minutes</strong>.
+              </p>
+
+              <p>
+                If you did not request this password reset, you can safely ignore this email.
+              </p>
+            </div>
+
           </div>
+        </body>
+        </html>
         `,
       },
       {
@@ -87,19 +128,20 @@ async function forgotPassword(req, res) {
       }
     );
 
-    console.log("Email Sent");
+    console.log("Email Sent Successfully");
     console.log(response.data);
 
     return res.status(200).json({
       success: true,
-      message: "Reset link sent successfully",
+      message: "Password reset email sent successfully",
     });
   } catch (err) {
-    console.log(err.response?.data || err);
+    console.error("Forgot Password Error:");
+    console.error(err.response?.data || err);
 
     return res.status(500).json({
       success: false,
-      message: "Failed to send email",
+      message: "Failed to send reset password email",
     });
   }
 }
