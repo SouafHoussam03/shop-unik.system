@@ -1,69 +1,38 @@
-const express = require('express')
-const cors = require('cors')
-const cookieParser = require('cookie-parser')
-require('dotenv').config()
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
 
-const connectDB = require('./config/db')
-const router = require('./routes')
+const connectDB = require('./config/db');
+const router = require('./routes');
 
-const app = express()
+const app = express();
 
-const allowedOrigins = [
-    'https://steady-torrone-cc03ee.netlify.app',
-]
-
+// ✅ CORS الصحيح
 app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            return callback(null, true)
-        }
-
-        return callback(new Error('Not allowed by CORS'))
-    },
-    credentials: true
-}))
+  origin: "http://localhost:8081",
+  credentials: true
+}));
+const cookieParser = require("cookie-parser")
 
 app.use(cookieParser())
-app.use(express.json({ limit: '10mb' }))
-app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+// ✅ JSON
+app.use(express.json());
 
+// ✅ test route
 app.get('/', (req, res) => {
-    res.json({
-        success: true,
-        message: 'API is running'
-    })
-})
+  res.send('API is running 🚀');
+});
 
-app.use('/api', router)
+// ✅ routes
+app.use("/api", router);
 
-app.use((req, res) => {
-    res.status(404).json({
-        success: false,
-        error: true,
-        message: 'Route not found'
-    })
-})
+// ✅ port
+const PORT = process.env.PORT || 8080;
 
-app.use((err, req, res, next) => {
-    console.error(err.message || err)
-
-    res.status(500).json({
-        success: false,
-        error: true,
-        message: err.message || 'Internal server error'
-    })
-})
-
-const PORT = process.env.PORT || 8080
-
-connectDB()
-    .then(() => {
-        app.listen(PORT, () => {
-            console.log('Connected to DB')
-            console.log(`Server is running on port ${PORT}`)
-        })
-    })
-    .catch((err) => {
-        console.error('DB connection failed:', err.message || err)
-        process.exit(1)
-    })
+// ✅ start server
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log("✅ Connected to DB");
+    console.log(`🚀 Server is running on http://localhost:${PORT}`);
+  });
+});

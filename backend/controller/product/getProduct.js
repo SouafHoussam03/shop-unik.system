@@ -2,11 +2,11 @@ const productModel = require("../../models/productModel");
 
 const getProductController = async (req, res) => {
   try {
-    let { page = 1, limit = 10 } = req.query;
+      let { page = 1, limit = 10000 } = req.query;
 
-    // ✅ convert to number
-    page = parseInt(page);
-    limit = parseInt(limit);
+      // ✅ convert to number
+      page = parseInt(page);
+      limit = parseInt(limit);
 
     const skip = (page - 1) * limit;
 

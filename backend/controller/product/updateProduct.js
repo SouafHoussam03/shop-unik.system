@@ -13,6 +13,7 @@ function generateSlug(text = "") {
 
 async function updateProductController(req, res) {
     try {
+
         const hasPermission = await uploadProductPermission(req.userId)
 
         if (!hasPermission) {
@@ -28,6 +29,7 @@ async function updateProductController(req, res) {
             productName,
             brandName,
             category,
+            subCategory,
             productImage,
             description,
             price,
@@ -53,6 +55,7 @@ async function updateProductController(req, res) {
             productName,
             brandName,
             category,
+            subCategory : String(subCategory || ""),
             productImage: productImage || [],
             description,
             price,
@@ -88,11 +91,13 @@ async function updateProductController(req, res) {
         })
 
     } catch (err) {
+
         return res.status(400).json({
             message: err.message || err,
             error: true,
             success: false
         })
+
     }
 }
 
