@@ -37,14 +37,14 @@ const topLinks = [
 ]
 
 const productCategories = [
-  { label: "ACOUSTIX", category: "solutions-acoustiques", logo: ACOUSTIX },
-  { label: "ARCHITEX", category: "plafond-tendu", logo: ARCHITEX },
-  { label: "ARTFLOW", category: "mur-tendu-imprime", logo: ARTFLOW },
-  { label: "CLIPTEX", category: "lightbox", logo: CLIPTEX },
-  { label: "LUMINA", category: "lightbox", logo: LUMINA },
-  { label: "SOFTEX", category: "papier-peint", logo: SOFTEX },
-  { label: "SOLARIS", category: "film-solaire", logo: SOLARIS },
-  { label: "WALLDRES", category: "mur-tendu-imprime", logo: WALLDRES },
+  { label: "ACOUSTIX", category: "ACOUSTIX", logo: ACOUSTIX },
+  { label: "ARCHITEX", category: "ARCHITEX", logo: ARCHITEX },
+  { label: "ARTFLOW", category: "ARTFLOW", logo: ARTFLOW },
+  { label: "CLIPTEX", category: "CLIPTEX", logo: CLIPTEX },
+  { label: "LUMINA", category: "LUMINA", logo: LUMINA },
+  { label: "SOFTEX", category: "SOFTEX", logo: SOFTEX },
+  { label: "SOLARIS", category: "SOLARIS", logo: SOLARIS },
+  { label: "WALLDRES", category: "WALLDRES", logo: WALLDRES },
 ]
 
 const NavButton = () => {

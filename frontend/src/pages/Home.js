@@ -297,42 +297,42 @@ const Home = () => {
     <section className='container mx-auto px-4 mt-20 space-y-20 pb-20'>
 
         <VerticalCardProduct
-    category="solutions-acoustiques"
+    category="ACOUSTIX"
     heading="ACOUSTIX"
 />
 
 <VerticalCardProduct
-    category="plafond-tendu"
+    category="ARCHITEX"
     heading="ARCHITEX"
 />
 
 <VerticalCardProduct
-    category="mur-tendu-imprime"
+    category="ARTFLOW"
     heading="ARTFLOW"
 />
 
 <VerticalCardProduct
-    category="lightbox"
+    category="CLIPTEX"
     heading="CLIPTEX"
 />
 
 <VerticalCardProduct
-    category="lightbox"
+    category="LUMINA"
     heading="LUMINA"
 />
 
 <VerticalCardProduct
-    category="papier-peint"
+    category="SOFTEX"
     heading="SOFTEX"
 />
 
 <VerticalCardProduct
-    category="film-solaire"
+    category="SOLARIS"
     heading="SOLARIS"
 />
 
 <VerticalCardProduct
-    category="mur-tendu-imprime"
+    category="WALLDRES"
     heading="WALLDRES"
 />
 
