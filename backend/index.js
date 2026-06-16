@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const connectDB = require('./config/db');
@@ -7,32 +8,34 @@ const router = require('./routes');
 
 const app = express();
 
-// ✅ CORS الصحيح
 app.use(cors({
-  origin: "https://shop-unik-system.netlify.app",
-  credentials: true
+    origin: [
+        "https://shop-unik-system.netlify.app",
+        "http://localhost:3000",
+        "http://localhost:5173"
+    ],
+    methods: ["GET","POST","PUT","DELETE","PATCH"],
+    credentials: true
 }));
-const cookieParser = require("cookie-parser")
 
-app.use(cookieParser())
-// ✅ JSON
+app.options('*', cors());
+
 app.use(express.json());
+app.use(cookieParser());
 
-// ✅ test route
 app.get('/', (req, res) => {
-  res.send('API is running 🚀');
+    res.json({
+        success: true,
+        message: "API is running"
+    });
 });
 
-// ✅ routes
-app.use("/api", router);
+app.use('/api', router);
 
-// ✅ port
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 10000;
 
-// ✅ start server
 connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log("✅ Connected to DB");
-    console.log(`🚀 Server is running on https://shop-unik-system.netlify.app`);
-  });
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
 });
