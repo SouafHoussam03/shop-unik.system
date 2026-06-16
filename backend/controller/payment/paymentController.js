@@ -50,7 +50,7 @@ async function createCheckoutSession(req, res) {
         })
 
         const frontendUrl =
-            process.env.FRONTEND_URL || "https://steady-torrone-cc03ee.netlify.app"
+            process.env.FRONTEND_URL || "https://shop-unik-system.netlify.app"
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],

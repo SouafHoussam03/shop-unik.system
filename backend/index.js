@@ -9,7 +9,7 @@ const app = express();
 
 // ✅ CORS الصحيح
 app.use(cors({
-  origin: "https://steady-torrone-cc03ee.netlify.app",
+  origin: "https://shop-unik-system.netlify.app",
   credentials: true
 }));
 const cookieParser = require("cookie-parser")
@@ -33,6 +33,6 @@ const PORT = process.env.PORT || 8080;
 connectDB().then(() => {
   app.listen(PORT, () => {
     console.log("✅ Connected to DB");
-    console.log(`🚀 Server is running on https://steady-torrone-cc03ee.netlify.app`);
+    console.log(`🚀 Server is running on https://shop-unik-system.netlify.app`);
   });
 });
