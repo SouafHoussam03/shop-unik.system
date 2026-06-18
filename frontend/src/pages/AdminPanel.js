@@ -46,16 +46,7 @@ const AdminPanel = () => {
             {/* ================= SIDEBAR ================= */}
             <aside className=' bg-white w-[280px] shadow-2xl hidden lg:flex flex-col'>
 
-                {/* HEADER */}
-                <div className='bg-gradient-to-r from-red-600 to-red-700 p-6 text-white'>
-
-                    
-
-                    <h3 className='font-bold text-xl mt-2'>
-                        Admin Dashboard
-                    </h3>
-
-                </div>
+                
 
                 {/* PROFILE */}
                 <div className='flex flex-col items-center py-8 border-b'>
@@ -92,6 +83,7 @@ const AdminPanel = () => {
                     </p>
 
                 </div>
+                
 
                 {/* NAVIGATION */}
                 <nav className='flex flex-col gap-3 p-5'>
@@ -166,50 +158,12 @@ const AdminPanel = () => {
                 
 
             </aside>
+            
 
             {/* ================= MAIN ================= */}
             <main className='flex-1 p-6 overflow-y-auto'>
 
-                {/* TOP BAR */}
-                <div className='bg-white rounded-3xl shadow-md px-6 py-5 mb-6 flex items-center justify-between'>
-
-                    <div>
-
-                        <h2 className='text-3xl font-bold text-gray-800'>
-                            Welcome Back 👋
-                        </h2>
-
-                        <p className='text-gray-500 mt-1'>
-                            Manage your ecommerce store easily
-                        </p>
-
-                    </div>
-
-                    {/* MINI PROFILE */}
-                    <div>
-
-                        {
-                            user?.profilePic ? (
-
-                                <img
-                                    src={user?.profilePic}
-                                    className='w-14 h-14 rounded-full object-cover border-2 border-red-500'
-                                    alt=''
-                                />
-
-                            ) : (
-
-                                <div className='text-4xl text-slate-500'>
-
-                                    <FaUserCircle />
-
-                                </div>
-                            )
-                        }
-
-                    </div>
-
-                </div>
+                
 
                 {/* PAGE CONTENT */}
                 <div className='bg-white rounded-3xl shadow-lg p-6 min-h-[80vh]'>

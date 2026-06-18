@@ -326,6 +326,21 @@ const Dashboard = () => {
                                         <td className='p-4 capitalize text-gray-600'>
                                             {product?.category}
                                         </td>
+                                        <div className='mt-2 flex flex-wrap gap-2'>
+    {product?.subCategory &&
+        (Array.isArray(product.subCategory)
+            ? product.subCategory
+            : [product.subCategory]
+        ).map((sub, index) => (
+            <span
+                key={index}
+                className='px-2 py-1 text-xs bg-red-50 text-red-600 rounded-full border border-red-100'
+            >
+                {sub}
+            </span>
+        ))
+    }
+</div>
 
                                         <td className='p-4 font-bold text-red-600'>
                                             {product?.sellingPrice} MAD

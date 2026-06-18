@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import SummaryApi from "../common"
 import { toast } from "react-toastify"
 import moment from "moment"
 import { MdModeEdit, MdDelete } from "react-icons/md"
-import { FaDownload, FaUsers, FaSyncAlt } from "react-icons/fa"
+import { FaDownload, FaUsers, FaSyncAlt, FaCircle } from "react-icons/fa"
 import ChangeUserRole from "../components/ChangeUserRole"
 
 const brand = {
@@ -12,6 +12,19 @@ const brand = {
   gray: "#5F5D56",
   light: "#F7F7F5",
   white: "#FFFFFF",
+}
+
+const ONLINE_LIMIT = 15 * 60 * 1000
+
+const isUserOnline = (user) => {
+  if (user?.isOnline === true) return true
+  if (!user?.lastActiveAt) return false
+
+  const lastActive = new Date(user.lastActiveAt).getTime()
+
+  if (Number.isNaN(lastActive)) return false
+
+  return Date.now() - lastActive < ONLINE_LIMIT
 }
 
 const AllUsers = () => {
@@ -26,6 +39,10 @@ const AllUsers = () => {
     role: "",
     _id: "",
   })
+
+  const onlineUsers = useMemo(() => {
+    return allUser.filter((user) => isUserOnline(user))
+  }, [allUser])
 
   const fetchAllUsers = async () => {
     try {
@@ -104,13 +121,15 @@ const AllUsers = () => {
       return
     }
 
-    const headers = ["Sr", "Name", "Email", "Role", "Created Date", "User ID"]
+    const headers = ["Sr", "Name", "Email", "Role", "Status", "Last Active", "Created Date", "User ID"]
 
     const rows = allUser.map((user, index) => [
       index + 1,
       cleanExcelValue(user?.name),
       cleanExcelValue(user?.email),
       cleanExcelValue(user?.role),
+      isUserOnline(user) ? "Online" : "Offline",
+      user?.lastActiveAt ? moment(user.lastActiveAt).format("YYYY-MM-DD HH:mm") : "",
       user?.createdAt ? moment(user.createdAt).format("YYYY-MM-DD HH:mm") : "",
       cleanExcelValue(user?._id),
     ])
@@ -154,9 +173,16 @@ const AllUsers = () => {
             All Users
           </h2>
 
-          <p className="mt-1 text-sm text-[#5F5D56]/70">
-            Total users: {allUser.length}
-          </p>
+          <div className="mt-2 flex flex-wrap gap-3 text-sm">
+            <span className="font-semibold text-[#5F5D56]/70">
+              Total users: {allUser.length}
+            </span>
+
+            <span className="inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1 font-bold text-green-700">
+              <FaCircle className="text-[8px]" />
+              Online: {onlineUsers.length}
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row">
@@ -176,19 +202,20 @@ const AllUsers = () => {
             className="flex items-center justify-center gap-2 rounded-full bg-[#EE2D2B] px-5 py-3 font-bold text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-[#5F5D56]"
           >
             <FaDownload />
-            Télécharger Excel
+            Telecharger Excel
           </button>
         </div>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[850px] text-left">
+        <table className="w-full min-w-[980px] text-left">
           <thead>
             <tr className="bg-[#5F5D56] text-white">
               <th className="px-5 py-4 text-sm font-black">Sr.</th>
               <th className="px-5 py-4 text-sm font-black">Name</th>
               <th className="px-5 py-4 text-sm font-black">Email</th>
               <th className="px-5 py-4 text-sm font-black">Role</th>
+              <th className="px-5 py-4 text-sm font-black">Status</th>
               <th className="px-5 py-4 text-sm font-black">Created Date</th>
               <th className="px-5 py-4 text-center text-sm font-black">
                 Action
@@ -197,65 +224,90 @@ const AllUsers = () => {
           </thead>
 
           <tbody>
-            {allUser?.map((el, index) => (
-              <tr
-                key={el?._id}
-                className="border-b border-[#5F5D56]/10 transition-all hover:bg-[#F7F7F5]"
-              >
-                <td className="px-5 py-4 font-semibold text-[#5F5D56]">
-                  {index + 1}
-                </td>
+            {allUser?.map((el, index) => {
+              const online = isUserOnline(el)
 
-                <td className="px-5 py-4 font-bold text-[#5F5D56]">
-                  {el?.name || "N/A"}
-                </td>
+              return (
+                <tr
+                  key={el?._id}
+                  className="border-b border-[#5F5D56]/10 transition-all hover:bg-[#F7F7F5]"
+                >
+                  <td className="px-5 py-4 font-semibold text-[#5F5D56]">
+                    {index + 1}
+                  </td>
 
-                <td className="px-5 py-4 text-[#5F5D56]/80">
-                  {el?.email || "N/A"}
-                </td>
+                  <td className="px-5 py-4 font-bold text-[#5F5D56]">
+                    {el?.name || "N/A"}
+                  </td>
 
-                <td className="px-5 py-4">
-                  <span className="rounded-full bg-[#EE2D2B]/10 px-4 py-1.5 text-sm font-bold uppercase text-[#EE2D2B]">
-                    {el?.role || "USER"}
-                  </span>
-                </td>
+                  <td className="px-5 py-4 text-[#5F5D56]/80">
+                    {el?.email || "N/A"}
+                  </td>
 
-                <td className="px-5 py-4 text-[#5F5D56]/80">
-                  {el?.createdAt ? moment(el.createdAt).format("LL") : "N/A"}
-                </td>
+                  <td className="px-5 py-4">
+                    <span className="rounded-full bg-[#EE2D2B]/10 px-4 py-1.5 text-sm font-bold uppercase text-[#EE2D2B]">
+                      {el?.role || "USER"}
+                    </span>
+                  </td>
 
-                <td className="px-5 py-4">
-                  <div className="flex items-center justify-center gap-3">
-                    <button
-                      type="button"
-                      title="Edit user"
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-[#5F5D56]/10 text-[#5F5D56] transition-all duration-300 hover:scale-110 hover:bg-[#EE2D2B] hover:text-white"
-                      onClick={() => {
-                        setUpdateUserDetails(el)
-                        setOpenUpdateRole(true)
-                      }}
-                    >
-                      <MdModeEdit />
-                    </button>
+                  <td className="px-5 py-4">
+                    <div>
+                      <span
+                        className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold ${
+                          online
+                            ? "bg-green-50 text-green-700"
+                            : "bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        <FaCircle className="text-[8px]" />
+                        {online ? "Online" : "Offline"}
+                      </span>
 
-                    <button
-                      type="button"
-                      title="Delete user"
-                      disabled={deleteLoading}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EE2D2B]/10 text-[#EE2D2B] transition-all duration-300 hover:scale-110 hover:bg-[#EE2D2B] hover:text-white disabled:opacity-50"
-                      onClick={() => handleDeleteUser(el?._id)}
-                    >
-                      <MdDelete />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      {el?.lastActiveAt && (
+                        <p className="mt-1 text-xs text-[#5F5D56]/60">
+                          Last active: {moment(el.lastActiveAt).fromNow()}
+                        </p>
+                      )}
+                    </div>
+                  </td>
+
+                  <td className="px-5 py-4 text-[#5F5D56]/80">
+                    {el?.createdAt ? moment(el.createdAt).format("LL") : "N/A"}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    <div className="flex items-center justify-center gap-3">
+                      <button
+                        type="button"
+                        title="Edit user"
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-[#5F5D56]/10 text-[#5F5D56] transition-all duration-300 hover:scale-110 hover:bg-[#EE2D2B] hover:text-white"
+                        onClick={() => {
+                          setUpdateUserDetails(el)
+                          setOpenUpdateRole(true)
+                        }}
+                      >
+                        <MdModeEdit />
+                      </button>
+
+                      <button
+                        type="button"
+                        title="Delete user"
+                        disabled={deleteLoading}
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EE2D2B]/10 text-[#EE2D2B] transition-all duration-300 hover:scale-110 hover:bg-[#EE2D2B] hover:text-white disabled:opacity-50"
+                        onClick={() => handleDeleteUser(el?._id)}
+                      >
+                        <MdDelete />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
 
             {!fetchLoading && allUser.length === 0 && (
               <tr>
                 <td
-                  colSpan="6"
+                  colSpan="7"
                   className="px-5 py-12 text-center font-semibold text-[#5F5D56]/70"
                 >
                   No users found

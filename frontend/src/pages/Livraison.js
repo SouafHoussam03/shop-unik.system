@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import emailjs from "@emailjs/browser"
 import {
@@ -18,6 +18,23 @@ const SERVICE_ID = "service_3egpn5l"
 const TEMPLATE_ID = "template_5z2v077"
 const PUBLIC_KEY = "gVix_E1owp2WxeEi6"
 
+const DELIVERY_OPTIONS = [
+    {
+        label: "Livraison a domicile",
+        price: 50
+    },
+    {
+        label: "Retrait au magasin",
+        price: 0
+    },
+    {
+        label: "Installation + livraison",
+        price: 200
+    }
+]
+
+const formatDeliveryPrice = (price) => price === 0 ? "Gratuit" : `${price} DH`
+
 const Livraison = () => {
     const navigate = useNavigate()
     const [sending, setSending] = useState(false)
@@ -27,9 +44,13 @@ const Livraison = () => {
         phone: "",
         city: "",
         address: "",
-        deliveryMethod: "Livraison à domicile",
+        deliveryMethod: DELIVERY_OPTIONS[0].label,
         note: ""
     })
+
+    const selectedDeliveryOption = useMemo(() => {
+        return DELIVERY_OPTIONS.find((option) => option.label === formData.deliveryMethod) || DELIVERY_OPTIONS[0]
+    }, [formData.deliveryMethod])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -64,6 +85,8 @@ const Livraison = () => {
             city: formData.city.trim(),
             address: formData.address.trim(),
             deliveryMethod: formData.deliveryMethod,
+            deliveryPrice: selectedDeliveryOption.price,
+            deliveryPriceText: formatDeliveryPrice(selectedDeliveryOption.price),
             note: formData.note.trim()
         }
 
@@ -86,6 +109,7 @@ const Livraison = () => {
                 city: cleanData.city,
                 address: cleanData.address,
                 deliveryMethod: cleanData.deliveryMethod,
+                deliveryPrice: cleanData.deliveryPriceText,
                 note: cleanData.note || "Aucune note",
                 message: `Nouvelle information de livraison pour ${cleanData.fullName}`,
                 time: new Date().toLocaleString("fr-FR")
@@ -109,7 +133,7 @@ const Livraison = () => {
                 console.warn("Delivery backend save failed:", error)
             }
 
-            toast.success("Informations de livraison enregistrées")
+            toast.success("Informations de livraison enregistrees")
             navigate("/checkout")
 
         } catch (error) {
@@ -183,7 +207,7 @@ const Livraison = () => {
                                 <div>
                                     <label className='font-bold text-gray-700 flex items-center gap-2'>
                                         <FaPhoneAlt className='text-red-600' />
-                                        Téléphone*
+                                        Telephone*
                                     </label>
 
                                     <input
@@ -226,31 +250,35 @@ const Livraison = () => {
                                         onChange={handleChange}
                                         className='w-full mt-2 px-5 py-4 rounded-2xl border bg-slate-50 outline-none focus:border-red-500'
                                     >
-                                        <option value='Livraison à domicile'>
-                                            Livraison à domicile
-                                        </option>
-
-                                        <option value='Retrait au magasin'>
-                                            Retrait au magasin
-                                        </option>
-
-                                        <option value='Installation avec livraison'>
-                                            Installation avec livraison
-                                        </option>
+                                        {DELIVERY_OPTIONS.map((option) => (
+                                            <option key={option.label} value={option.label}>
+                                                {option.label} - {formatDeliveryPrice(option.price)}
+                                            </option>
+                                        ))}
                                     </select>
+
+                                    <div className='mt-3 flex items-center justify-between rounded-2xl bg-red-50 border border-red-100 px-5 py-3'>
+                                        <span className='font-bold text-gray-700'>
+                                            Prix livraison
+                                        </span>
+
+                                        <span className='font-black text-red-600'>
+                                            {formatDeliveryPrice(selectedDeliveryOption.price)}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className='md:col-span-2'>
                                     <label className='font-bold text-gray-700 flex items-center gap-2'>
                                         <FaMapMarkerAlt className='text-red-600' />
-                                        Adresse complète*
+                                        Adresse complete*
                                     </label>
 
                                     <textarea
                                         name='address'
                                         value={formData.address}
                                         onChange={handleChange}
-                                        placeholder='Adresse, quartier, étage, numéro...'
+                                        placeholder='Adresse, quartier, etage, numero...'
                                         rows={4}
                                         className='w-full mt-2 px-5 py-4 rounded-2xl border bg-slate-50 outline-none focus:border-red-500 resize-none'
                                         required

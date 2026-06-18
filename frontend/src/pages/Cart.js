@@ -7,6 +7,10 @@ import displayCurrency from '../helpers/displayCurrency'
 import { MdDelete } from "react-icons/md"
 import { FaArrowRight, FaShoppingCart, FaTruck } from "react-icons/fa"
 
+const TAX_RATE = 0.20
+
+const getPriceTTC = (price) => Number(price || 0) * (1 + TAX_RATE)
+
 const Cart = () => {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
@@ -154,7 +158,7 @@ const Cart = () => {
         )
     }, [data])
 
-    const totalPrice = useMemo(() => {
+    const totalPriceHT = useMemo(() => {
         return data.reduce(
             (preve, curr) =>
                 preve +
@@ -165,6 +169,9 @@ const Cart = () => {
             0
         )
     }, [data])
+
+    const totalTax = useMemo(() => totalPriceHT * TAX_RATE, [totalPriceHT])
+    const totalPriceTTC = useMemo(() => totalPriceHT + totalTax, [totalPriceHT, totalTax])
 
     const handleGoToDelivery = () => {
         if (data.length === 0) {
@@ -194,7 +201,7 @@ const Cart = () => {
                             </h2>
 
                             <p className='text-gray-500 mt-1'>
-                                Découvrez vos produits sélectionnés chez UNIK SYSTEM
+                                Decouvrez vos produits selectionnes chez UNIK SYSTEM
                             </p>
                         </div>
 
@@ -238,77 +245,109 @@ const Cart = () => {
                                 </p>
                             </div>
                         ) : (
-                            data.map((product) => (
-                                <div
-                                    key={product?._id}
-                                    className='group bg-white rounded-[30px] border border-gray-100 shadow-sm p-5 mb-6 flex flex-col sm:flex-row gap-5 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500'
-                                >
-                                    <div className='w-full sm:w-36 h-36 bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl overflow-hidden flex items-center justify-center'>
-                                        <img
-                                            src={product?.productId?.productImage?.[0]}
-                                            className='w-full h-full object-contain group-hover:scale-110 transition-all duration-500'
-                                            alt={product?.productId?.productName || "product"}
-                                        />
-                                    </div>
+                            data.map((product) => {
+                                const productPriceTTC = getPriceTTC(product?.productId?.sellingPrice)
+                                const productTotalTTC = productPriceTTC * Number(product?.quantity || 0)
 
-                                    <div className='flex-1 relative'>
-
-                                        <button
-                                            type='button'
-                                            onClick={() => deleteCartProduct(product?._id)}
-                                            className='absolute right-0 top-0 bg-red-100 hover:bg-red-600 hover:text-white text-red-600 p-3 rounded-full transition-all duration-300 shadow-sm'
-                                        >
-                                            <MdDelete />
-                                        </button>
-
-                                        <h2 className='text-2xl font-bold text-gray-800 line-clamp-1 pr-12'>
-                                            {product?.productId?.productName}
-                                        </h2>
-
-                                        <p className='text-gray-500 capitalize mt-1'>
-                                            {product?.productId?.category}
-                                        </p>
-
-                                        <div className='flex items-center justify-between mt-5'>
-                                            <p className='text-red-600 text-2xl font-black'>
-                                                {displayCurrency(product?.productId?.sellingPrice)}
-                                            </p>
-
-                                            <p className='text-gray-700 text-xl font-bold'>
-                                                {displayCurrency(
-                                                    Number(product?.productId?.sellingPrice || 0) *
-                                                    Number(product?.quantity || 0)
-                                                )}
-                                            </p>
+                                return (
+                                    <div
+                                        key={product?._id}
+                                        className='group bg-white rounded-[30px] border border-gray-100 shadow-sm p-5 mb-6 flex flex-col sm:flex-row gap-5 hover:shadow-2xl hover:-translate-y-1 transition-all duration-500'
+                                    >
+                                        <div className='w-full sm:w-36 h-36 bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl overflow-hidden flex items-center justify-center'>
+                                            <img
+                                                src={product?.productId?.productImage?.[0]}
+                                                className='w-full h-full object-contain group-hover:scale-110 transition-all duration-500'
+                                                alt={product?.productId?.productName || "product"}
+                                            />
                                         </div>
 
-                                        <div className='flex items-center gap-4 mt-6'>
+                                        <div className='flex-1 relative'>
 
                                             <button
                                                 type='button'
-                                                onClick={() => decraseQty(product?._id, product?.quantity)}
-                                                className='w-11 h-11 rounded-full border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-300 text-xl'
+                                                onClick={() => deleteCartProduct(product?._id)}
+                                                className='absolute right-0 top-0 bg-red-100 hover:bg-red-600 hover:text-white text-red-600 p-3 rounded-full transition-all duration-300 shadow-sm'
                                             >
-                                                -
+                                                <MdDelete />
                                             </button>
 
-                                            <span className='text-xl font-bold text-gray-800'>
-                                                {product?.quantity}
-                                            </span>
+                                            <h2 className='text-2xl font-bold text-gray-800 line-clamp-1 pr-12'>
+                                                {product?.productId?.productName}
+                                            </h2>
 
-                                            <button
-                                                type='button'
-                                                onClick={() => increaseQty(product?._id, product?.quantity)}
-                                                className='w-11 h-11 rounded-full border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-300 text-xl'
-                                            >
-                                                +
-                                            </button>
+                                            <div className='mt-2 flex flex-wrap gap-1'>
+
+                                                <span className='px-2 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-semibold'>
+                                                    {product?.productId?.category}
+                                                </span>
+
+                                                {product?.productId?.subCategory &&
+                                                    (Array.isArray(product.productId.subCategory)
+                                                        ? product.productId.subCategory
+                                                        : [product.productId.subCategory]
+                                                    ).map((sub, index) => (
+                                                        <span
+                                                            key={index}
+                                                            className='px-2 py-1 bg-red-50 text-red-600 border border-red-100 rounded-full text-xs font-medium'
+                                                        >
+                                                            {typeof sub === "object"
+                                                                ? sub.label || sub.value
+                                                                : sub}
+                                                        </span>
+                                                    ))
+                                                }
+
+                                            </div>
+
+                                            <div className='flex items-center justify-between mt-5'>
+                                                <div>
+                                                    <p className='text-red-600 text-2xl font-black'>
+                                                        {displayCurrency(productPriceTTC)}
+                                                    </p>
+                                                    <p className='text-xs font-semibold text-gray-400 uppercase tracking-wide'>
+                                                        TTC 20%
+                                                    </p>
+                                                </div>
+
+                                                <div className='text-right'>
+                                                    <p className='text-gray-700 text-xl font-bold'>
+                                                        {displayCurrency(productTotalTTC)}
+                                                    </p>
+                                                    <p className='text-xs font-semibold text-gray-400 uppercase tracking-wide'>
+                                                        Total TTC
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className='flex items-center gap-4 mt-6'>
+
+                                                <button
+                                                    type='button'
+                                                    onClick={() => decraseQty(product?._id, product?.quantity)}
+                                                    className='w-11 h-11 rounded-full border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-300 text-xl'
+                                                >
+                                                    -
+                                                </button>
+
+                                                <span className='text-xl font-bold text-gray-800'>
+                                                    {product?.quantity}
+                                                </span>
+
+                                                <button
+                                                    type='button'
+                                                    onClick={() => increaseQty(product?._id, product?.quantity)}
+                                                    className='w-11 h-11 rounded-full border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-300 text-xl'
+                                                >
+                                                    +
+                                                </button>
+
+                                            </div>
 
                                         </div>
-
                                     </div>
-                                </div>
-                            ))
+                                )
+                            })
                         )}
 
                     </div>
@@ -318,12 +357,12 @@ const Cart = () => {
                         <div className='bg-white rounded-[30px] border border-gray-100 shadow-xl p-7 sticky top-24 backdrop-blur-xl'>
 
                             <h2 className='text-3xl font-black text-gray-800 mb-7'>
-                                Résumé
+                                Resume
                             </h2>
 
                             <div className='flex justify-between py-4 border-b text-lg'>
                                 <span className='text-gray-500'>
-                                    Quantité
+                                    Quantite
                                 </span>
 
                                 <span className='font-bold text-gray-800'>
@@ -331,13 +370,33 @@ const Cart = () => {
                                 </span>
                             </div>
 
+                            <div className='flex justify-between py-4 border-b text-lg'>
+                                <span className='text-gray-500'>
+                                    Sous-total HT
+                                </span>
+
+                                <span className='font-bold text-gray-800'>
+                                    {displayCurrency(totalPriceHT)}
+                                </span>
+                            </div>
+
+                            <div className='flex justify-between py-4 border-b text-lg'>
+                                <span className='text-gray-500'>
+                                    TVA 20%
+                                </span>
+
+                                <span className='font-bold text-gray-800'>
+                                    {displayCurrency(totalTax)}
+                                </span>
+                            </div>
+
                             <div className='flex justify-between py-5 text-2xl font-black'>
                                 <span className='text-gray-800'>
-                                    Total
+                                    Total TTC
                                 </span>
 
                                 <span className='text-red-600'>
-                                    {displayCurrency(totalPrice)}
+                                    {displayCurrency(totalPriceTTC)}
                                 </span>
                             </div>
 

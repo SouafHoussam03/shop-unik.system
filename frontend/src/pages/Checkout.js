@@ -12,8 +12,13 @@ import {
 import SummaryApi from "../common"
 import displayCurrency from "../helpers/displayCurrency"
 
+const TAX_RATE = 0.20
+
+const getPriceTTC = (price) => Number(price || 0) * (1 + TAX_RATE)
+
 const Checkout = () => {
     const [cartItems, setCartItems] = useState([])
+    const [deliveryInfo, setDeliveryInfo] = useState(null)
     const [loading, setLoading] = useState(true)
     const [payLoading, setPayLoading] = useState(false)
 
@@ -46,9 +51,19 @@ const Checkout = () => {
 
     useEffect(() => {
         fetchCartProducts()
+
+        const savedDeliveryInfo = localStorage.getItem("deliveryInfo")
+
+        if (savedDeliveryInfo) {
+            try {
+                setDeliveryInfo(JSON.parse(savedDeliveryInfo))
+            } catch (error) {
+                setDeliveryInfo(null)
+            }
+        }
     }, [])
 
-    const subTotal = useMemo(() => {
+    const subTotalHT = useMemo(() => {
         return cartItems.reduce((total, item) => {
             const price = Number(item?.productId?.sellingPrice || 0)
             const quantity = Number(item?.quantity || 1)
@@ -57,8 +72,10 @@ const Checkout = () => {
         }, 0)
     }, [cartItems])
 
-    const deliveryFee = subTotal > 0 ? 0 : 0
-    const total = subTotal + deliveryFee
+    const taxAmount = useMemo(() => subTotalHT * TAX_RATE, [subTotalHT])
+    const subTotalTTC = useMemo(() => subTotalHT + taxAmount, [subTotalHT, taxAmount])
+    const deliveryFee = Number(deliveryInfo?.deliveryPrice || 0)
+    const total = subTotalTTC + deliveryFee
 
     const handlePayment = async () => {
         try {
@@ -76,7 +93,8 @@ const Checkout = () => {
                     "content-type": "application/json"
                 },
                 body: JSON.stringify({
-                    cartItems
+                    cartItems,
+                    deliveryInfo
                 })
             })
 
@@ -207,7 +225,8 @@ const Checkout = () => {
                                 {cartItems.map((item) => {
                                     const product = item?.productId
                                     const quantity = item?.quantity || 1
-                                    const price = product?.sellingPrice || 0
+                                    const priceTTC = getPriceTTC(product?.sellingPrice)
+                                    const totalItemTTC = priceTTC * Number(quantity)
 
                                     return (
                                         <div
@@ -228,13 +247,37 @@ const Checkout = () => {
                                                 <p className='text-gray-500 capitalize text-sm mt-1'>
                                                     {product?.category}
                                                 </p>
+                                                <div className='mt-2 flex flex-wrap gap-2'>
+                                                    {product?.subCategory &&
+                                                        (Array.isArray(product.subCategory)
+                                                            ? product.subCategory
+                                                            : [product.subCategory]
+                                                        ).map((sub, index) => (
+                                                            <span
+                                                                key={index}
+                                                                className='px-2 py-1 text-xs bg-red-50 text-red-600 rounded-full border border-red-100'
+                                                            >
+                                                                {typeof sub === "object"
+                                                                    ? sub.label || sub.value
+                                                                    : sub}
+                                                            </span>
+                                                        ))
+                                                    }
+                                                </div>
 
                                                 <p className='font-black text-red-600 mt-3'>
-                                                    {displayCurrency(price)}
+                                                    {displayCurrency(priceTTC)}
+                                                    <span className='text-xs text-gray-400 ml-2'>
+                                                        TTC 20%
+                                                    </span>
                                                 </p>
 
                                                 <p className='text-gray-500 text-sm mt-1'>
                                                     Quantity: {quantity}
+                                                </p>
+
+                                                <p className='text-gray-700 text-sm font-bold mt-1'>
+                                                    Total produit: {displayCurrency(totalItemTTC)}
                                                 </p>
                                             </div>
 
@@ -261,20 +304,43 @@ const Checkout = () => {
                             <div className='space-y-4 text-gray-600'>
 
                                 <div className='flex justify-between'>
-                                    <span>Subtotal</span>
+                                    <span>Sous-total HT</span>
                                     <span className='font-bold text-gray-800'>
-                                        {displayCurrency(subTotal)}
+                                        {displayCurrency(subTotalHT)}
                                     </span>
                                 </div>
 
                                 <div className='flex justify-between'>
-                                    <span>Delivery</span>
-                                    <span className='font-bold text-green-600'>
+                                    <span>TVA 20%</span>
+                                    <span className='font-bold text-gray-800'>
+                                        {displayCurrency(taxAmount)}
+                                    </span>
+                                </div>
+
+                                <div className='flex justify-between'>
+                                    <span>Sous-total TTC</span>
+                                    <span className='font-bold text-gray-800'>
+                                        {displayCurrency(subTotalTTC)}
+                                    </span>
+                                </div>
+
+                                <div className='flex justify-between'>
+                                    <span>
+                                        Livraison
+                                        {deliveryInfo?.deliveryMethod ? ` (${deliveryInfo.deliveryMethod})` : ""}
+                                    </span>
+                                    <span className={`font-bold ${deliveryFee === 0 ? "text-green-600" : "text-gray-800"}`}>
                                         {deliveryFee === 0
-                                            ? "Free"
+                                            ? "Gratuit"
                                             : displayCurrency(deliveryFee)}
                                     </span>
                                 </div>
+
+                                {!deliveryInfo && (
+                                    <div className='rounded-2xl bg-amber-50 border border-amber-100 px-4 py-3 text-sm text-amber-700'>
+                                        Aucune information de livraison trouvee. Retournez a la page livraison pour choisir un mode.
+                                    </div>
+                                )}
 
                                 <div className='border-t pt-4 flex justify-between text-xl'>
                                     <span className='font-black text-gray-800'>
