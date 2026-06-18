@@ -1,6 +1,12 @@
 const orderModel = require("../../models/orderModel")
 const addToCartModel = require("../../models/cartProduct")
 
+const TAX_RATE = 0.20
+
+function getPriceTTC(price) {
+    return Number(price || 0) * (1 + TAX_RATE)
+}
+
 async function saveDeliveryInfoController(req, res) {
     try {
         const userId = req.userId
@@ -37,12 +43,23 @@ async function saveDeliveryInfoController(req, res) {
             })
         }
 
-        const totalAmount = cartItems.reduce((total, item) => {
+        const deliveryPrice = Number(deliveryInfo?.deliveryPrice || 0)
+
+        const subTotalHT = cartItems.reduce((total, item) => {
             return total + (
                 Number(item?.quantity || 0) *
                 Number(item?.productId?.sellingPrice || 0)
             )
         }, 0)
+
+        const taxAmount = subTotalHT * TAX_RATE
+        const productsTotalTTC = cartItems.reduce((total, item) => {
+            return total + (
+                Number(item?.quantity || 0) *
+                getPriceTTC(item?.productId?.sellingPrice)
+            )
+        }, 0)
+        const totalAmount = productsTotalTTC + deliveryPrice
 
         const order = await orderModel.create({
             userId,
@@ -50,7 +67,15 @@ async function saveDeliveryInfoController(req, res) {
                 productId: item.productId._id,
                 quantity: item.quantity
             })),
-            deliveryInfo,
+            deliveryInfo: {
+                ...deliveryInfo,
+                deliveryPrice
+            },
+            subTotalHT,
+            taxRate: TAX_RATE,
+            taxAmount,
+            productsTotalTTC,
+            deliveryPrice,
             totalAmount,
             paymentStatus: "pending"
         })
