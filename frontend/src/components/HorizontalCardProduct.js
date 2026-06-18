@@ -213,9 +213,25 @@ const HorizontalCardProduct = ({
                                         {product?.productName}
                                     </h3>
 
+
                                     <p className='text-sm text-gray-500 mt-1 capitalize'>
                                         {product?.category}
                                     </p>
+                                    <div className='mt-2 flex flex-wrap gap-2'>
+    {product?.subCategory &&
+        (Array.isArray(product.subCategory)
+            ? product.subCategory
+            : [product.subCategory]
+        ).map((sub, index) => (
+            <span
+                key={index}
+                className='px-2 py-1 text-xs bg-red-50 text-red-600 rounded-full border border-red-100'
+            >
+                {sub}
+            </span>
+        ))
+    }
+</div>
 
                                     <div className='flex items-center gap-3 mt-4'>
                                         <span className='text-2xl font-black text-red-600'>

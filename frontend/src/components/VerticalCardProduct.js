@@ -255,6 +255,7 @@ const VerticalCardProduct = ({
                                             {product?.category}
 
                                         </p>
+                                        
 
                                         <div className='flex items-center gap-1 text-yellow-500 text-xs font-bold'>
 
@@ -265,6 +266,22 @@ const VerticalCardProduct = ({
                                         </div>
 
                                     </div>
+                                    <div className='mt-2 flex flex-wrap gap-2'>
+    {product?.subCategory &&
+        (Array.isArray(product.subCategory)
+            ? product.subCategory
+            : [product.subCategory]
+        ).map((sub, index) => (
+            <span
+                key={index}
+                className='px-2 py-1 text-xs bg-red-50 text-red-600 rounded-full border border-red-100'
+            >
+                {sub}
+            </span>
+        ))
+    }
+</div>
+<br/>
 
 
                                     {/* TITLE */}

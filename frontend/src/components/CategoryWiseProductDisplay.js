@@ -200,6 +200,21 @@ const CategroyWiseProductDisplay = ({
                                             <p className='capitalize text-slate-500 text-sm mt-1 line-clamp-1'>
                                                 {product?.category}
                                             </p>
+                                            <div className='mt-2 flex flex-wrap gap-2'>
+    {product?.subCategory &&
+        (Array.isArray(product.subCategory)
+            ? product.subCategory
+            : [product.subCategory]
+        ).map((sub, index) => (
+            <span
+                key={index}
+                className='px-2 py-1 text-xs bg-red-50 text-red-600 rounded-full border border-red-100'
+            >
+                {sub}
+            </span>
+        ))
+    }
+</div>
 
                                             <div className='flex flex-wrap items-center gap-3 mt-3'>
                                                 <p className='text-red-600 font-bold'>
